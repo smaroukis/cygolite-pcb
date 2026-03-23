@@ -4,6 +4,10 @@
 	(generator_version "9.0")
 	(uuid "4a315a2e-5be0-4136-9b7b-b936a0cf3ad8")
 	(paper "A4")
+	(title_block
+		(title "Cygolite Bike Light Clone v1.0")
+		(date "2026-03-23")
+	)
 	(lib_symbols
 		(symbol "0_new_symbol_lib:530480310"
 			(pin_names
@@ -3755,6 +3759,16 @@
 			)
 		)
 		(uuid "de6a93ee-bac3-493a-9c21-373a65220c91")
+	)
+	(text "@smaroukis"
+		(exclude_from_sim no)
+		(at 250.444 189.484 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+		)
+		(uuid "f5c171aa-2a92-4eca-aec4-75b5033731c8")
 	)
 	(text "UART"
 		(exclude_from_sim no)
