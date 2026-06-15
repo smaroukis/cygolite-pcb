@@ -1,2 +1,5 @@
 scripts
 *.lck
+firmware/platformio-attiny202-pwm/.vscode/extensions.json
+firmware/venv
+Cygolite-Clone-backups/
