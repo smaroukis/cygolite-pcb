@@ -7,6 +7,8 @@ void button_debounce_init(ButtonDebounce *button, uint8_t debounce_ms) {
     button->debounce_ms = debounce_ms;
 }
 
+// Event checker needs to be run every 1ms
+// Assumes active HIGH button press
 bool button_debounce_pressed_event(
     ButtonDebounce *button,
     bool raw_pressed_state
