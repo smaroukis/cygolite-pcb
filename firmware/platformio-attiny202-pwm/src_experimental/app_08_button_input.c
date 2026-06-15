@@ -1,3 +1,6 @@
+// Note the headers/source files changed after this commit, see later app examples
+// this one may not work
+
 #define F_CPU 3333333UL
 
 #include <avr/io.h>
