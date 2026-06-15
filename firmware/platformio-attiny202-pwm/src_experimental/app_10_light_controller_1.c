@@ -30,16 +30,6 @@ int main(void) {
     while (1) {
         while (tick_take_1ms()) {
             button_update_1ms();
-
-            if (button_is_pressed()) {
-                uint16_t held_ms = button_current_press_duration_ms();
-
-                if (light_controller_update_button_hold(held_ms)) {
-                    uart0_print("long press threshold reached -> ");
-                    uart0_print(light_controller_state_name());
-                    uart0_print("\r\n");
-                }
-            }
         }
 
         if (button_take_pressed_event()) {
