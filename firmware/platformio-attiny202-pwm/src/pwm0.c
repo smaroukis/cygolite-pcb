@@ -37,29 +37,42 @@ void pwm0_init_pa3(void) {
     TCA0.SINGLE.CTRLA =
         TCA_SINGLE_CLKSEL_DIV1_gc |
         TCA_SINGLE_ENABLE_bm;
+
+
+    pwm0_set_duty_8bit(0);
 }
 
 void pwm0_set_duty_8bit(uint8_t duty) {
     pwm0_current_duty = duty;
 
+    // Make sure PA3 is an output.
+    PORTA.DIRSET = PWM0_PIN_bm;
+
     if (duty == 0) {
-        TCA0.SINGLE.CTRLB &= ~TCA_SINGLE_CMP0EN_bp; // clear -> disable
-        PORTA.DIRSET = PWM0_PIN_bm; 
+        /*
+         * True OFF:
+         * disconnect TCA0 from PA3 and force PA3 LOW.
+         */
+        TCA0.SINGLE.CTRLB &= ~TCA_SINGLE_CMP0EN_bm;
         PORTA.OUTCLR = PWM0_PIN_bm;
         return;
     }
 
     if (duty >= 255) {
-        TCA0.SINGLE.CTRLB &= ~TCA_SINGLE_CMP0EN_bp; // clear -> disable
-        PORTA.DIRSET = PWM0_PIN_bm; 
-        PORTA.OUTCLR = PWM0_PIN_bm;
+        /*
+         * True FULL ON:
+         * disconnect TCA0 from PA3 and force PA3 HIGH.
+         */
+        TCA0.SINGLE.CTRLB &= ~TCA_SINGLE_CMP0EN_bm;
+        PORTA.OUTSET = PWM0_PIN_bm;
         return;
     }
 
-    // else
-    PORTA.DIRSET = PWM0_PIN_bm;
+    /*
+     * Normal PWM range.
+     */
     TCA0.SINGLE.CMP0 = duty;
-    TCA0.SINGLE.CTRLB |= TCA_SINGLE_CMP0EN_bm; // enable
+    TCA0.SINGLE.CTRLB |= TCA_SINGLE_CMP0EN_bm;
 }
 
 uint8_t pwm0_get_duty_8bit(void) {
@@ -69,18 +82,20 @@ uint8_t pwm0_get_duty_8bit(void) {
 void pwm0_disable_pa3_output(void) {
     /*
      * Disconnect TCA0 compare channel 0 from PA3.
-     * The timer can keep running internally.
+     * Do not change pwm0_current_duty, because this may be temporary.
      */
     TCA0.SINGLE.CTRLB &= ~TCA_SINGLE_CMP0EN_bm;
 
-    // Force PA3 low while PWM is disconnected.
+    // Force PA3 low while disabled.
+    PORTA.DIRSET = PWM0_PIN_bm;
     PORTA.OUTCLR = PWM0_PIN_bm;
 }
 
 void pwm0_enable_pa3_output(void) {
-    // Make sure PA3 is configured as output.
+    /*
+     * Restore PA3 output according to the remembered duty.
+     * This correctly handles 0%, 100%, and middle PWM values.
+     */
     PORTA.DIRSET = PWM0_PIN_bm;
-
-    // Reconnect TCA0 compare channel 0 to PA3.
-    TCA0.SINGLE.CTRLB |= TCA_SINGLE_CMP0EN_bm;
+    pwm0_set_duty_8bit(pwm0_current_duty);
 }
